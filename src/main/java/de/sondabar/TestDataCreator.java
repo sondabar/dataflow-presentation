@@ -7,20 +7,14 @@ import com.google.cloud.dataflow.sdk.io.TextIO;
 import com.google.cloud.dataflow.sdk.options.DataflowPipelineOptions;
 import com.google.cloud.dataflow.sdk.options.PipelineOptionsFactory;
 import com.google.cloud.dataflow.sdk.runners.DirectPipelineRunner;
-import com.google.cloud.dataflow.sdk.transforms.Create;
-import com.google.cloud.dataflow.sdk.transforms.DoFn;
-import com.google.cloud.dataflow.sdk.transforms.ParDo;
-import com.google.cloud.dataflow.sdk.transforms.Values;
+import com.google.cloud.dataflow.sdk.transforms.*;
 import com.google.cloud.dataflow.sdk.values.KV;
 import com.google.cloud.dataflow.sdk.values.PCollection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -102,7 +96,8 @@ public class TestDataCreator {
                                                                      final TableRow subRow = new TableRow();
 
                                                                      subRow.put("bpr",
-                                                                                new BigDecimal(String.format(Locale.ENGLISH,"%,5f",
+                                                                                new BigDecimal(String.format(Locale.ENGLISH,
+                                                                                                             "%,5f",
                                                                                                              random.nextDouble())));
                                                                      subRow.put("cid", newRandomInt(taken));
                                                                      subRows.add(subRow);
@@ -116,7 +111,22 @@ public class TestDataCreator {
                                .withCoder(TableRowJsonCoder.of())
                                .withoutSharding());
 
-
+        bids.apply(Partition.of(2, new Partition.PartitionFn<KV<String, TableRow>>() {
+            @Override
+            public int partitionFor(KV<String, TableRow> elem, int numPartitions) {
+                return Integer.parseInt(elem.getKey()) % numPartitions;
+            }
+        })).get(0).apply(ParDo.of(new DoFn<KV<String, TableRow>, String>() {
+            @Override
+            public void processElement(ProcessContext c) throws Exception {
+                c.output(String.format("%s,%s,%s,%s",
+                                       c.element().getKey(),
+                                       System.currentTimeMillis(),
+                                       ((Map<String, Integer>) ((List) c.element().getValue().get("bids")).get(0)).get(
+                                               "cid"),
+                                       String.format(Locale.US, "%,5f", random.nextDouble())));
+            }
+        })).apply(TextIO.Write.to("src/main/resources/hugin/wonBids.csv").withoutSharding());
         pipeline.run();
     }
 

@@ -5,7 +5,6 @@ import com.google.cloud.dataflow.sdk.coders.DefaultCoder;
 import org.apache.avro.reflect.Nullable;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +24,7 @@ public class CampaignResult extends CampaignEvent {
     private BigDecimal bidPrice;
 
     @Nullable
-    private BigDecimal winPrice;
+    private BigDecimal wonPrice;
 
     public CampaignResult() {
     }
@@ -37,7 +36,7 @@ public class CampaignResult extends CampaignEvent {
         this.timestamp = bid.timestamp;
         this.features = new ArrayList<>(bid.features);
         if (wonBid != null) {
-            winPrice = wonBid.getPrice();
+            wonPrice = wonBid.getPrice();
         }
     }
 
@@ -52,10 +51,12 @@ public class CampaignResult extends CampaignEvent {
     @Override
     public String toString() {
         return "CampaignResult{" +
-                "features=" + features +
+                "bid=" + bid +
+                ", cid=" + cid +
+                ", features=" + features +
                 ", state=" + state +
                 ", bidPrice=" + bidPrice +
-                ", winPrice=" + winPrice +
+                ", wonPrice=" + wonPrice +
                 '}';
     }
 }

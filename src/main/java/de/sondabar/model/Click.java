@@ -10,7 +10,7 @@ public class Click extends CampaignEvent {
         super();
     }
 
-    public Click(Long bid, Long timestamp, Long cid) {
+    public Click(String bid, Long timestamp, Long cid) {
         super(bid, timestamp, cid);
     }
 

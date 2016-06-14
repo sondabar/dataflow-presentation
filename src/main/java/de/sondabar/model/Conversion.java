@@ -10,7 +10,7 @@ public class Conversion extends CampaignEvent {
         super();
     }
 
-    public Conversion(Long bid, Long timestamp, Long cid) {
+    public Conversion(String bid, Long timestamp, Long cid) {
         super(bid, timestamp, cid);
     }
 

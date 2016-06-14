@@ -13,27 +13,26 @@ public class CampaignEvent extends Event {
     public CampaignEvent() {
     }
 
-    public CampaignEvent(Long bid, Long timestamp, Long cid) {
+    public CampaignEvent(String bid, Long timestamp, Long cid) {
         this.bid = bid;
         this.timestamp = timestamp;
         this.cid = cid;
     }
 
     public CampaignEvent(String bid, String timestamp, String cid) {
-        this.bid = Long.parseLong(bid);
+        this.bid = bid;
         this.timestamp = Long.parseLong(timestamp);
         this.cid = Long.parseLong(cid);
     }
 
-    public CampaignEvent(String line)
-    {
+    public CampaignEvent(String line) {
         final String[] fields = line.split(",");
-        this.bid = Long.parseLong(fields[0]);
+        this.bid = fields[0];
         this.timestamp = Long.parseLong(fields[1]);
         this.cid = Long.parseLong(fields[2]);
     }
 
-    public Long getBid() {
+    public String getBid() {
         return bid;
     }
 
@@ -43,6 +42,10 @@ public class CampaignEvent extends Event {
 
     public Long getCid() {
         return cid;
+    }
+
+    public String getBidCidKey() {
+        return bid + '_' + Long.toString(cid);
     }
 
     @Override

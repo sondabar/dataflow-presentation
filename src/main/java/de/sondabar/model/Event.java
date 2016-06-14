@@ -7,30 +7,30 @@ import org.apache.avro.reflect.Nullable;
 @DefaultCoder(AvroCoder.class)
 public class Event {
     @Nullable
-    Long bid;
+    String bid;
     @Nullable
     Long timestamp;
 
     public Event() {
     }
 
-    public Event(Long bid, Long timestamp) {
+    public Event(String bid, Long timestamp) {
         this.bid = bid;
         this.timestamp = timestamp;
     }
 
     public Event(String bid, String timestamp) {
-        this.bid = Long.parseLong(bid);
+        this.bid = bid;
         this.timestamp = Long.parseLong(timestamp);
     }
 
     public Event(String line) {
         final String[] fields = line.split(",");
-        this.bid = Long.parseLong(fields[0]);
+        this.bid = fields[0];
         this.timestamp = Long.parseLong(fields[1]);
     }
 
-    public Long getBid() {
+    public String getBid() {
         return bid;
     }
 

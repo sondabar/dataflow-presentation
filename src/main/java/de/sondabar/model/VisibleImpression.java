@@ -10,7 +10,7 @@ public class VisibleImpression extends CampaignEvent{
         super();
     }
 
-    public VisibleImpression(Long bid, Long timestamp, Long cid) {
+    public VisibleImpression(String bid, Long timestamp, Long cid) {
         super(bid, timestamp, cid);
     }
 

@@ -27,9 +27,12 @@ public class TestDataCreator {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TestDataCreator.class);
 
+    private final static Random random = new Random();
+
     public static void main(String[] args) {
-        final DataflowPipelineOptions options = PipelineOptionsFactory.create()
-                                                                      .as(DataflowPipelineOptions.class);
+        final Random random = new Random();
+
+        final DataflowPipelineOptions options = PipelineOptionsFactory.create().as(DataflowPipelineOptions.class);
         options.setRunner(DirectPipelineRunner.class);
 
         final Pipeline pipeline = Pipeline.create(options);
@@ -48,68 +51,78 @@ public class TestDataCreator {
                                                    .map(i -> "featureValue_" + i)
                                                    .collect(Collectors.toCollection(ArrayList<String>::new));
 
-        final Random random = new Random();
+        PCollection<KV<String, TableRow>> bids = pipeline.apply(Create.of(bidIds))
+                                                         .apply(ParDo.of(new DoFn<Integer, KV<String, TableRow>>() {
+                                                             @Override
+                                                             public void processElement(
+                                                                     ProcessContext c) throws Exception {
+                                                                 String bidId = Integer.toString(c.element());
+                                                                 final TableRow row = new TableRow();
+                                                                 row.put("bid", bidId);
+                                                                 row.put("ts", System.currentTimeMillis());
 
-        PCollection<KV<Integer, TableRow>> bids =
-                pipeline.apply(Create.of(bidIds))
-                        .apply(ParDo.of(new DoFn<Integer, KV<Integer, TableRow>>() {
-                            @Override
-                            public void processElement(
-                                    ProcessContext c) throws Exception {
-                                Integer bidId = c.element();
-                                final TableRow row = new TableRow();
-                                row.put("bid", bidId);
-                                row.put("ts", System.currentTimeMillis());
-
-                                c.output(KV.of(bidId, row));
-                            }
-                        })).apply(ParDo.of(
-                        new DoFn<KV<Integer, TableRow>, KV<Integer, TableRow>>() {
-                            @Override
-                            public void processElement(ProcessContext c) throws Exception {
-                                Integer bidId = c.element().getKey();
-                                final TableRow row = c.element().getValue().clone();
-                                final int subRowCount = random.nextInt(3) + 1;
-                                final List<TableRow> subRows = new ArrayList<>(subRowCount);
-                                for (int i = 1; i <= subRowCount; i++) {
-                                    final TableRow subRow = new TableRow();
-                                    subRow.put("fv", featureValues.get(random.nextInt(featureCount)));
-                                    subRow.put("fn", featureNames.get(random.nextInt(featureCount)));
-                                    subRows.add(subRow);
-                                }
-                                row.put("features", subRows);
-                                c.output(KV.of(bidId, row));
-                            }
-                        })).apply(ParDo.of(
-                        new DoFn<KV<Integer, TableRow>, KV<Integer, TableRow>>() {
-                            @Override
-                            public void processElement(ProcessContext c) throws Exception {
-                                Integer bidId = c.element().getKey();
-                                final TableRow row = c.element().getValue().clone();
-                                final int subRowCount = random.nextInt(3) + 1;
-                                final List<TableRow> subRows = new ArrayList<>(subRowCount);
-                                for (int i = 1; i <= subRowCount; i++) {
-                                    final TableRow subRow = new TableRow();
-                                    subRow.put("bpr", BigDecimal.valueOf(random.nextDouble()));
-                                    subRow.put("cid", random.nextInt(9) + 1);
-                                    subRows.add(subRow);
-                                }
-                                row.put("bids", subRows);
-                                c.output(KV.of(bidId, row));
-                            }
-                        }))
-                        .apply(ParDo.of(
-                                new DoFn<KV<Integer, TableRow>, KV<Integer, TableRow>>() {
-                                    @Override
-                                    public void processElement(
-                                            ProcessContext c) throws Exception {
-                                        LOGGER.info(c.element().toString());
-                                        c.output(c.element());
-                                    }
-                                }));
+                                                                 c.output(KV.of(bidId, row));
+                                                             }
+                                                         }))
+                                                         .apply(ParDo.of(new DoFn<KV<String, TableRow>, KV<String, TableRow>>() {
+                                                             @Override
+                                                             public void processElement(
+                                                                     ProcessContext c) throws Exception {
+                                                                 String bidId = c.element().getKey();
+                                                                 final TableRow row = c.element().getValue().clone();
+                                                                 final int subRowCount = random.nextInt(3) + 1;
+                                                                 final List<TableRow> subRows = new ArrayList<>(
+                                                                         subRowCount);
+                                                                 for (int i = 1; i <= subRowCount; i++) {
+                                                                     final TableRow subRow = new TableRow();
+                                                                     subRow.put("fv",
+                                                                                featureValues.get(random.nextInt(
+                                                                                        featureCount)));
+                                                                     subRow.put("fn",
+                                                                                featureNames.get(random.nextInt(
+                                                                                        featureCount)));
+                                                                     subRows.add(subRow);
+                                                                 }
+                                                                 row.put("features", subRows);
+                                                                 c.output(KV.of(bidId, row));
+                                                             }
+                                                         }))
+                                                         .apply(ParDo.of(new DoFn<KV<String, TableRow>, KV<String, TableRow>>() {
+                                                             @Override
+                                                             public void processElement(
+                                                                     ProcessContext c) throws Exception {
+                                                                 String bidId = c.element().getKey();
+                                                                 final TableRow row = c.element().getValue().clone();
+                                                                 final int subRowCount = random.nextInt(3) + 1;
+                                                                 final List<TableRow> subRows = new ArrayList<>(
+                                                                         subRowCount);
+                                                                 List<Integer> taken = new ArrayList<>(subRowCount);
+                                                                 for (int i = 1; i <= subRowCount; i++) {
+                                                                     final TableRow subRow = new TableRow();
+                                                                     subRow.put("bpr",
+                                                                                BigDecimal.valueOf(random.nextDouble()));
+                                                                     subRow.put("cid", newRandomInt(taken));
+                                                                     subRows.add(subRow);
+                                                                 }
+                                                                 row.put("bids", subRows);
+                                                                 c.output(KV.of(bidId, row));
+                                                             }
+                                                         }));
         bids.apply(Values.create())
-            .apply(TextIO.Write.to("src/main/resources/bids.json").withCoder(TableRowJsonCoder.of()).withoutSharding());
+            .apply(TextIO.Write.to("src/main/resources/hugin/bids.json")
+                               .withCoder(TableRowJsonCoder.of())
+                               .withoutSharding());
 
         pipeline.run();
+    }
+
+    private static int newRandomInt(List<Integer> taken) {
+        int cid = random.nextInt(9) + 1;
+        if (!taken.contains(cid)) {
+            taken.add(cid);
+            return cid;
+        } else {
+            return newRandomInt(taken);
+        }
     }
 }

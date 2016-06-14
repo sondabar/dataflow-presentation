@@ -10,7 +10,7 @@ public class Impression extends CampaignEvent {
         super();
     }
 
-    public Impression(Long bid, Long timestamp, Long cid) {
+    public Impression(String bid, Long timestamp, Long cid) {
         super(bid, timestamp, cid);
     }
 

@@ -32,6 +32,10 @@ public class WonBid extends CampaignEvent {
         this.price = new BigDecimal(fields[3]);
     }
 
+    public BigDecimal getPrice() {
+        return price;
+    }
+
     @Override
     public String toString() {
         return "WonBid{" +

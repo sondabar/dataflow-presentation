@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -99,8 +100,10 @@ public class TestDataCreator {
                                                                  List<Integer> taken = new ArrayList<>(subRowCount);
                                                                  for (int i = 1; i <= subRowCount; i++) {
                                                                      final TableRow subRow = new TableRow();
+
                                                                      subRow.put("bpr",
-                                                                                BigDecimal.valueOf(random.nextDouble()));
+                                                                                new BigDecimal(String.format(Locale.ENGLISH,"%,5f",
+                                                                                                             random.nextDouble())));
                                                                      subRow.put("cid", newRandomInt(taken));
                                                                      subRows.add(subRow);
                                                                  }
@@ -112,6 +115,7 @@ public class TestDataCreator {
             .apply(TextIO.Write.to("src/main/resources/hugin/bids.json")
                                .withCoder(TableRowJsonCoder.of())
                                .withoutSharding());
+
 
         pipeline.run();
     }

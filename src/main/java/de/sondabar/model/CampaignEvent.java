@@ -27,9 +27,9 @@ public class CampaignEvent extends Event {
 
     public CampaignEvent(String line) {
         final String[] fields = line.split(",");
-        this.bid = fields[0];
-        this.timestamp = Long.parseLong(fields[1]);
-        this.cid = Long.parseLong(fields[2]);
+        bid = fields[0];
+        timestamp = Long.parseLong(fields[1]);
+        cid = Long.parseLong(fields[2]);
     }
 
     public String getBid() {

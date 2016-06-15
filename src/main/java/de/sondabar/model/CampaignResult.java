@@ -15,7 +15,7 @@ public class CampaignResult extends CampaignEvent
 {
 
    @Nullable
-   private List<Feature> features;
+   protected List<Feature> features;
 
    public enum State
    {
@@ -43,7 +43,7 @@ public class CampaignResult extends CampaignEvent
    private State state = State.Bid;
 
    @Nullable
-   private BigDecimal bidPrice;
+   protected BigDecimal bidPrice;
 
    @Nullable
    private BigDecimal wonPrice;

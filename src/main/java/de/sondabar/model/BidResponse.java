@@ -14,9 +14,9 @@ import java.util.UUID;
 public class BidResponse extends Event {
 
     @Nullable
-    private List<Feature> features = null;
+    protected List<Feature> features = null;
     @Nullable
-    private List<BidLine> bidLines = null;
+    protected List<BidLine> bidLines = null;
 
     public BidResponse() {
         bid = UUID.randomUUID().toString();

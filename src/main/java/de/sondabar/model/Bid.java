@@ -14,19 +14,19 @@ import java.util.stream.Collectors;
 public class Bid extends CampaignEvent {
 
     @Nullable
-    List<Feature> features;
+    protected List<Feature> features;
 
-    BigDecimal bidPrice;
+    protected BigDecimal bidPrice;
 
     public Bid() {
     }
 
     public Bid(BidResponse bidResponse, Long cid) {
-        this.bid = bidResponse.bid;
-        this.timestamp = bidResponse.timestamp;
+        bid = bidResponse.bid;
+        timestamp = bidResponse.timestamp;
 
-        this.features = new ArrayList<>(bidResponse.features.size());
-        this.features.addAll(bidResponse.features.stream().collect(Collectors.toList()));
+        features = new ArrayList<>(bidResponse.features.size());
+        features.addAll(bidResponse.features.stream().collect(Collectors.toList()));
 
         this.cid = cid;
         bidResponse.bidLines.stream().filter(bid -> Objects.equals(bid.cid, cid)).forEach(bid -> bidPrice = bid.getPrice());

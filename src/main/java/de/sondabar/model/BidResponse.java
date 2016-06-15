@@ -14,29 +14,29 @@ import java.util.UUID;
 public class BidResponse extends Event {
 
     @Nullable
-    List<Feature> features;
+    private List<Feature> features = null;
     @Nullable
-    List<BidLine> bidLines;
+    private List<BidLine> bidLines = null;
 
     public BidResponse() {
         bid = UUID.randomUUID().toString();
     }
 
-    public BidResponse(TableRow tableRow) {
+    public BidResponse(final TableRow tableRow) {
         bid = (String)tableRow.get("bid");
         timestamp = (Long)tableRow.get("ts");
 
-        List<Map<String, String>> features = (List<Map<String, String>>) tableRow.get("features");
+        final List<Map<String, String>> features = (List<Map<String, String>>) tableRow.get("features");
         this.features = new ArrayList<>(features.size());
-        for(Map<String, String> map: features)
+        for(final Map<String, String> map: features)
         {
             this.features.add(new Feature(map));
         }
-        List<Map<String, Object>> bids = (List<Map<String, Object>>) tableRow.get("bids");
-        this.bidLines = new ArrayList<>(bids.size());
-        for(Map<String, Object> map: bids)
+        final List<Map<String, Object>> bids = (List<Map<String, Object>>) tableRow.get("bids");
+        bidLines = new ArrayList<>(bids.size());
+        for(final Map<String, Object> map: bids)
         {
-            this.bidLines.add(new BidLine(map));
+            bidLines.add(new BidLine(map));
         }
     }
 

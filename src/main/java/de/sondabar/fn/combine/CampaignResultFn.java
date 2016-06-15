@@ -23,23 +23,23 @@ public class CampaignResultFn extends DoFn<KV<String, CoGbkResult>, CampaignResu
     }
 
     @Override
-    public void processElement(ProcessContext c) throws Exception {
-        CoGbkResult value = c.element().getValue();
-        Bid bid = value.getOnly(TupleTags.CAMPAIGN_TUPLE);
-        WonBid wonBid = value.getOnly(TupleTags.WON_BID_TUPLE, null);
-        Impression impression = value.getOnly(TupleTags.IMPRESSION_TUPLE, null);
-        VisibleImpression visibleImpression = value.getOnly(TupleTags.VIS_IMPRESSION_TUPLE, null);
-        Click click = value.getOnly(TupleTags.CLICK_TUPLE, null);
-        Conversion conversion = value.getOnly(TupleTags.CONVERSION_TUPLE, null);
+    public void processElement(final ProcessContext c) throws Exception {
+        final CoGbkResult value = c.element().getValue();
+        final Bid bid = value.getOnly(TupleTags.CAMPAIGN_TUPLE);
+        final WonBid wonBid = value.getOnly(TupleTags.WON_BID_TUPLE, null);
+        final Impression impression = value.getOnly(TupleTags.IMPRESSION_TUPLE, null);
+        final VisibleImpression visibleImpression = value.getOnly(TupleTags.VIS_IMPRESSION_TUPLE, null);
+        final Click click = value.getOnly(TupleTags.CLICK_TUPLE, null);
+        final Conversion conversion = value.getOnly(TupleTags.CONVERSION_TUPLE, null);
 
-        CampaignResult campaignResult = new CampaignResult(bid, wonBid);
+        final CampaignResult campaignResult = new CampaignResult(bid, wonBid);
         campaignResult.setState(getState(bid, wonBid, impression, visibleImpression, click, conversion));
         c.output(campaignResult);
     }
 
-    private State getState(Event... events) {
-        Stack<Event> stack = new Stack<>();
-        for (Event event : events) {
+    private State getState(final Event... events) {
+        final Stack<Event> stack = new Stack<>();
+        for (final Event event : events) {
             if (event != null) {
                 stack.push(event);
             }

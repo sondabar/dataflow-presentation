@@ -8,11 +8,11 @@ import de.sondabar.model.BidResponse;
 
 public class ToCampaignResponse extends DoFn<BidResponse, KV<String, Bid>> {
     @Override
-    public void processElement(ProcessContext processContext) throws Exception {
+    public void processElement(final ProcessContext processContext) throws Exception {
         final BidResponse bidResponse = processContext.element();
-        for(BidLine bidLine : bidResponse.getBidLines() )
+        for(final BidLine bidLine : bidResponse.getBidLines() )
         {
-            Bid response = new Bid(bidResponse, bidLine.getCid());
+            final Bid response = new Bid(bidResponse, bidLine.getCid());
             processContext.output(KV.of(response.getBidCidKey(), response));
         }
     }

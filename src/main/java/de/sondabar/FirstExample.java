@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 public class FirstExample {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(FirstExample.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FirstExample.class);
 
     public static void main(String[] args) {
         final DataflowPipelineOptions options = PipelineOptionsFactory.create()

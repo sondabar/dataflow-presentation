@@ -2,6 +2,7 @@ package de.sondabar;
 
 import com.google.cloud.dataflow.sdk.Pipeline;
 import com.google.cloud.dataflow.sdk.io.TextIO;
+import com.google.cloud.dataflow.sdk.io.TextIO.Read;
 import com.google.cloud.dataflow.sdk.options.DataflowPipelineOptions;
 import com.google.cloud.dataflow.sdk.options.PipelineOptionsFactory;
 import com.google.cloud.dataflow.sdk.runners.DirectPipelineRunner;
@@ -16,7 +17,7 @@ import org.slf4j.LoggerFactory;
 
 public class ClicksExample {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(ClicksExample.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClicksExample.class);
 
     public static void main(String[] args) {
         final DataflowPipelineOptions options = PipelineOptionsFactory.create()
@@ -25,7 +26,7 @@ public class ClicksExample {
 
         final Pipeline pipeline = Pipeline.create(options);
 
-        final PCollection<Click> clicksTableRow = pipeline.apply(TextIO.Read.from("src/main/resources/clicks.csv"))
+        final PCollection<Click> clicksTableRow = pipeline.apply(Read.from("src/main/resources/clicks.csv"))
                                                           .apply(ParDo.of(new DoFn<String, Click>() {
                                                               @Override
                                                               public void processElement(
@@ -37,7 +38,7 @@ public class ClicksExample {
                                                               }
                                                           }));
 
-        clicksTableRow.apply(Count.<Click>globally()).apply(ParDo.of(new DoFn<Long, Long>() {
+        clicksTableRow.apply(Count.globally()).apply(ParDo.of(new DoFn<Long, Long>() {
             @Override
             public void processElement(ProcessContext processContext) throws Exception {
                 final Long element = processContext.element();

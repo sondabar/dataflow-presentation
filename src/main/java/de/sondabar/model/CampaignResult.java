@@ -52,6 +52,7 @@ public class CampaignResult extends CampaignEvent {
     public String toString() {
         return "CampaignResult{" +
                 "bid=" + bid +
+                ", ts =" + timestamp +
                 ", cid=" + cid +
                 ", features=" + features +
                 ", state=" + state +
